@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Quản lý thư viện</title>
+        <style>
+            table th,
+            table td { 
+                padding: 4px;
+            }
+            
+            input {
+				height: 28px;
+				width: 250px;
+			}
+			
+			span {
+				width: 100px;
+				display: inline-block;
+			}
+            
+            .error {
+            	outline: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="text-align: center; margin-top: 200px">
+        	<h1>Đăng nhập</h1>
+        
+	        <form action="/login" method="post">
+	        	<span></span> <input class="error" th:if="${error != null}" th:value="${error}" style="color: red; font-size: 12px; border: none;" readonly="readonly"> <br>
+	        	<span>Tài Khoản:</span> <input type="email" name="email" placeholder="sample@gmail.com"> <br> <br>
+	        	<span>Mật Khẩu:</span> <input type="password" name="password"> <br> <br>
+	        	<span></span> <input type="submit" value="Đăng nhập"> <br> <br>
+	        </form>
+        
+        </div>
+        
+        
+    </body>
+</html>

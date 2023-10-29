@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <title>Quản lý thư viện</title>
+        <style>
+            table th,
+            table td { 
+                padding: 4px;
+            }
+            input {
+            	margin-top: 8px;
+            }
+            body {
+				
+			}
+			
+			.input-area {
+				margin-right: 20px;
+			}
+			
+			button {
+				margin-top: 8px;
+			}
+			
+			.quantity {
+				margin-right: 20px;
+			}
+			
+			.order {
+				margin-right: 20px;
+			}
+			
+			.evaluate {
+				width: 300px;
+				height: 80px;
+			}
+			
+			.submit-evaluate {
+				width: 150px;
+			}
+			
+			.evaluate-show {
+				width: 300px;
+				height: 116px;
+				overflow: scroll;
+			}
+            
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div style="text-align: center;">
+        	<h1>Thông tin chi tiết</h1>
+	        
+	        <br> <br>
+        </div>
+        
+        
+        <!-- content -->
+        <div style="padding-bottom: 350px;">
+        	<form action="/" style="display: flex; justify-content: center; position: relative;">
+	        	<div class="left">
+	        		<div style="display: flex;">
+	        			<div class="input-area">
+	        				<strong class="title"> Tiêu đề <span style="color: red">*</span> </strong>
+	        				<br>
+	        				<input required="required" class="field" th:if="${book != null}" type="text" th:value="${book.title}" readonly="readonly">
+	        				<input required="required" class="field" th:if="${book == null}" type="text" name="title">
+	        			</div>
+	        			<div class="input-area">
+	        				<strong class="title"> Tác giả <span style="color: red">*</span> </strong>
+	        				<br>
+	        				<input required="required" class="field" th:if="${book != null}" type="text" th:value="${book.author}" readonly="readonly">
+	        				<input required="required" class="field" th:if="${book == null}" type="text" name="author">
+	        			</div>
+	        		</div>
+	        		<br> 
+	        		
+	        		<div>
+	        			<div class="input-area">
+	        				<strong class="title"> Mô tả về sách</strong>
+	        				<br>
+	        				<textarea required="required" class="field" th:if="${book != null}" readonly="readonly" type="text" style="width: 100%; height: 150px;" th:text="${book.description}"></textarea>
+	        				<textarea required="required" class="field" th:if="${book == null}" type="text" style="width: 100%; height: 150px;"></textarea>
+	        			</div>
+	        		</div>
+	        		<br> 
+	        		
+	        		<div style="display: flex;">
+	        			<div class="input-area">
+	        				<strong class="title"> Ngày phát hành <span style="color: red">*</span> </strong>
+	        				<br>
+	        				<input required="required" class="field" th:if="${book != null}" readonly="readonly" type="text" th:value="${book.releaseDate}">
+	        				<input required="required" class="field" th:if="${book == null}" type="text">
+	        			</div>
+	        			<div class="input-area">
+	        				<strong class="title"> Số trang </strong>
+	        				<br>
+	        				<input required="required" class="field" th:if="${book != null}" readonly="readonly" type="text" th:value="${book.numberOfPages}">
+	        				<input required="required" class="field" th:if="${book == null}" type="text">
+	        			</div>
+	        		</div>
+	        		<br> 
+	        		
+	        		<div style="display: flex;">
+	        			<div class="input-area">
+	        				<strong class="title"> Thể loại </strong>
+	        				<br>
+	        				<!-- <input type="text" th:value="${book.category}"> -->
+	        				<select class="field" style="height: 22px; margin-top: 8px; width: 170.4px;">
+	        					<option th:each="category,iterStat : ${session.categories}"
+	        					 th:text="${category.name}" th:value="${category.id}"></option>
+	        				</select>
+	        			</div>
+	        			
+	        			<div class="input-area">
+	        				<strong class="title"> Đơn giá </strong>
+	        				<br>
+	        				<input required="required" class="field" th:if="${book != null}" readonly="readonly" type="number" min="1" th:value="${book.price}">
+	        				<input required="required" class="field" th:if="${book == null}" type="number">
+	        			</div>
+	        		</div>
+	        		
+	        		
+	        		<br> <br>
+	        	
+	        	</div>
+	
+				<span style="display: none;" class="user-name" th:if="${session.user != null}" th:text="${session.user.name}"></span>
+	
+	        	<div class="right" style="margin-left: 40px">
+	        		<br>
+	        		<input class="field upload" required="required" style="margin-top: 8px;" th:value="${book != null ?  book.image : 'Upload' }" type="file">
+	        		<br>
+	        		<br>
+	        		<br>
+	        		<div style="border: 1px solid #000; width: 300px; height: 300px; display: block">
+	        			<img class="image" th:src="'/img/' + ${book.image}" th:if="${book != null}" style="width: 100%; height: 100%" alt="Ảnh bìa sách">
+	        			<img class="book-img" th:if="${book == null}" style="width: 100%; height: 100%" alt="Ảnh bìa sách">
+	        		</div>
+	        	
+	        	</div>
+        		<hr style="position: absolute; width: 100%; bottom: -30px; ">
+		        <div style="display: flex; justify-content: right; align-items: center; position: absolute; bottom: -50px; right: 0; left: 0;">
+		        	<!-- Buy -->
+		        	<strong th:if="${book != null && session.role != null}" style="margin-right: 8px; margin-top: 4px;">Số lượng: </strong>
+		        	<input th:if="${book != null && session.role != null}" type="number" min="1" required="required" class="quantity">
+		        	<button th:if="${book != null && session.role != null}" style="width: 150px; height: 22px; margin-top: 8px" type="button" class="order"> Đặt hàng </button>
+		        	
+		        	<button style="width: 150px; height: 22px; margin-top: 8px" type="button"> <a style="text-decoration: none; color: #000" href="/">Quay lại</a> </button>
+		        	<div th:if="${session.role == null}" style="width: 400px;"></div>
+		        	<div th:if="${session.role == 'USER'}" style="width: 400px;"></div>
+		        	<span style="display: none" class="book-id" th:if="${book != null}" th:text="${book.id}"></span>
+		        	<span style="display: none" class="user-id" th:if="${book != null && session.user != null}" th:text="${session.user.id}"></span>
+		        	<button th:if="${book != null && session.role == 'ADMIN'}" class="editBtn" style="margin-right: 26%; margin-left:20px; width: 150px; height: 22px" type="button" >Edit</button>
+		        	<button th:if="${book != null}" class="saveBtn" style="margin-right: 26%; margin-left:20px; width: 150px; display: none; height: 22px" type="submit" >Save</button>
+		        	<input th:if="${book == null}" class="addBtn" style="margin-right: 26%; margin-left:20px; width: 150px;" type="submit" value="Add"/>
+		        </div>
+		        
+		        <!-- Evaluate -->
+	        	<div th:if="${session.user != null}" style="position: absolute; bottom: -200px; left: 26%; right: 26%; display: flex; justify-content: space-between;">
+		        	<div>
+		        		<textarea rows="" cols="" class="evaluate"></textarea> <br>
+		        		<button class="submit-evaluate" type="button">Đăng</button>
+		        	</div>
+		        	
+		        	<!-- Show evaluate -->
+		        	<div class="evaluate-show">
+		        		<strong>Đánh giá:</strong>
+		        		<div th:each="evaluate : ${evaluates}" th:text="${evaluate.userName} + ' : ' + ${evaluate.evaluate}"></div>
+		        	</div>
+	        	</div>
+	        	
+	        	
+        	</form>
+        	
+        </div>
+        
+        
+        
+        
+        
+    <script type="text/javascript">
+		$(document).ready(function() {
+			// Submit evaluate
+			$('.submit-evaluate').click(function() {
+				let bookId = Number($('.book-id').text());
+				let evaluate = $('.evaluate').val();
+				let userName = $('.user-name').text();
+				if(evaluate == '') {
+					alert('Bạn chưa nhập đánh giá.');
+				}
+				else {
+					let data = {};
+					data.bookId = bookId;
+					data.evaluate = evaluate;
+					data.userName = userName;
+					
+					// call api create new evaluate:
+					$.ajax({
+			            type: "POST",
+			            url: "http://localhost:8080/evaluate",
+			            // async: false,
+			            data: JSON.stringify(data),
+			            dataType: "json",
+			            contentType: "application/json",
+			            success: function (response) {
+			            	alert("Đã đăng đánh giá thành công.");
+			            	window.location.reload();
+			            },
+			            error: function(reject) {
+			                alert("Không thành công.");
+			                console.log(reject);
+			            }
+			        });	
+				}
+				
+			});
+			
+			
+			// Click order:
+			$('.order').click(function() {
+				// get book id 
+				// get user id
+				let bookId = Number($('.book-id').text());
+				let userId = Number($('.user-id').text());
+				
+				let check = 0;
+				
+				// Get quantity
+				let quantity = $('.quantity').val();
+				
+				if(quantity >= 1) {
+					check = 1;
+				}
+				else {
+					alert("Số lượng không hợp lệ.")
+				}
+				
+				if(check) {
+					// build order
+					let order = {};
+					order.bookId = bookId;
+					order.userId = userId;
+					order.quantity = quantity;
+					
+					// call api create new order:
+					$.ajax({
+			            type: "POST",
+			            url: "http://localhost:8080/order",
+			            // async: false,
+			            data: JSON.stringify(order),
+			            dataType: "json",
+			            contentType: "application/json",
+			            success: function (response) {
+			            	alert("Đặt hàng thành công.");
+			            	window.location.href = 'http://localhost:8080/';
+			            },
+			            error: function(reject) {
+			                alert("Không thành công.");
+			                console.log(reject);
+			            }
+			        });	
+				}
+				
+				
+			});
+			
+			
+			
+			let url = '';
+			// Click edit button:
+			$(".editBtn").click(function() {
+				let images = $('.image');
+				let imageURL = $(images[0]).attr('src').substring(5);
+				url = imageURL;
+				
+				let inputs = $("input");
+				let textAreas = $("textarea");
+				for(input of inputs) {
+					$(input).removeAttr("readonly");
+				}
+				for(textArea of textAreas) {
+					$(textArea).removeAttr("readonly");
+				}
+				$(this).hide();
+				$('.saveBtn').css("display", "block");
+			
+			});
+			
+			// Click save:
+			$('.saveBtn').click(function() {
+				let fields = $('.field');
+				console.log(fields)
+				let check = 1;
+				
+				let i = 0;
+				for(input of fields) {
+					if(input.value == "" && i != 7) {
+						check = 0;
+					}
+					i++;
+				}
+				
+				if( check ) {
+					let book = {};
+					
+					book.id = Number($('.book-id').text());
+					book.title = fields[0].value;
+					book.author = fields[1].value;
+					book.description = fields[2].value;
+					book.releaseDate = fields[3].value;
+					book.numberOfPages = Number(fields[4].value);
+					book.category = fields[5].value;
+					book.price = fields[6].value;
+					console.log(fields)
+					if( fields[7].value != "" ) {
+						book.image = fields[7].value.substring(12);
+					}
+					else {
+						book.image = url;						
+					}
+					console.log(book)
+					
+					// call api:
+					$.ajax({
+			            type: "POST",
+			            url: "http://localhost:8080/update-book",
+			            // async: false,
+			            data: JSON.stringify(book),
+			            dataType: "json",
+			            contentType: "application/json",
+			            success: function (response) {
+			            	alert("Sửa thành công.");
+			            	window.location.href = 'http://localhost:8080/';
+			            },
+			            error: function(reject) {
+			                alert("Không thành công.");
+			                console.log(reject);
+			            }
+			        });	
+				}
+				
+			})
+			
+			
+			// upload image:
+			$(".upload").change(function() {
+				let imageURL = document.querySelector('.upload').value;
+				console.log(imageURL);
+				imageURL = '/img/' + imageURL.substring(12);
+				$('.book-img').attr("src", imageURL);
+			});
+			
+			// click add button:
+			$(".addBtn").click(function() {
+				let fields = $('.field');
+				let check = 1;
+				
+				for(input of fields) {
+					if(input.value == "") {
+						check = 0;
+					}
+				}
+				console.log(check);
+				if(check) {
+					// create new book
+					let book = {};
+					book.id = 0;
+					book.title = fields[0].value;
+					book.author = fields[1].value;
+					book.description = fields[2].value;
+					book.releaseDate = fields[3].value;
+					book.numberOfPages = Number(fields[4].value);
+					book.category = fields[5].value;
+					book.price = fields[6].value;
+					book.image = fields[7].value.substring(12);
+					
+					
+					
+					// call api:
+					$.ajax({
+			            type: "POST",
+			            url: "http://localhost:8080/add-book",
+			            // async: false,
+			            data: JSON.stringify(book),
+			            dataType: "json",
+			            contentType: "application/json",
+			            success: function (response) {
+			            	alert("Thêm thành công.");
+			            	window.location.href = 'http://localhost:8080/';
+			            },
+			            error: function(reject) {
+			                alert("Không thành công.");
+			                console.log(reject);
+			            }
+			        });		
+				}
+				
+			});
+				
+		})
+	
+	</script>
+    </body>
+    
+    
+</html>

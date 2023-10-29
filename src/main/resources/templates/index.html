@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css">
+        <title>Quản lý thư viện</title>
+        <style>
+        	* {
+        		padding: 0;
+        		margin: 0;
+        		
+        	}
+        
+            table th,
+            table td { 
+                padding: 4px;
+                min-width: 150px;
+            }
+            
+            body {
+				text-align: center;
+			}
+			
+			.t-wrap {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+				width: 80%;
+				margin: 0 auto;
+				margin-top: 100px;
+			}
+			
+			.t-28-per {
+				width: 28%; 
+				margin: 0 2%;
+				margin-bottom: 50px;
+			}
+			
+			.flex {
+				display: flex;
+			}
+			
+			.w-60 {
+				width: 60%;
+				margin: 0 auto;
+				justify-content: space-between;
+				font-size: 20px;
+			}
+			
+			.header {
+				background-color: #e082003b;
+				background-position: center;
+				background-size: cover;
+				height: 320px;
+				padding-top: 20px;
+			}
+			
+			.area {
+				justify-content: space-between;
+				width: 60%;
+				margin: 30px auto 8px;
+			}
+			
+			.header-left {
+				text-align: left;
+			}
+            .search {
+            	width: 80%;
+            	height: 40px;
+            	border-radius: 20px;
+            	border: 1px solid #ccc;
+            	padding: 0 8px;
+            }
+            .s-area {
+            	position: relative;
+            }
+            .icon-search {
+            	width: 16px;
+            	position: absolute;
+            	right: 110px;
+            	top: 12px;
+            }
+            
+            a {
+            	color: #000;
+            	text-decoration: none;
+            }
+            
+            
+            button {
+            	border: 1px solid #ccc;
+            	background-color: #fff;
+            	padding: 2px 20px;
+            }
+            
+            button:hover {
+            	background-color: #ccc;
+            	
+            }
+            
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="header">
+        	<div class="menu flex w-60">
+        		<a href="/">Trang chủ</a>
+        		<a th:href="${(session.role != null && session.user != null) ? '/list-order' : '#'}">Đơn hàng</a>
+        		<a href="#">Thông báo</a>
+        		<a href="#" th:if="${session.user != null}" th:text="${session.user.name}"></a>
+        		<a href="/logout" th:if="${session.user != null}">Đăng xuất</a>
+        		<div th:if="${session.user == null}">
+        			<a href="/login" >Đăng nhập/</a>
+        			<a href="/register" >Đăng ký</a>
+        		</div>
+        	</div>
+        
+        	<div class="area flex">
+        		<div class="header-left">
+        			<h1>Sách là cả thế giới <br> Cùng chúng tôi khám phá <br> thế giới của riêng bạn</h1>
+        			<br>
+        			<div class="s-area">
+        				<input class="search">
+	        			<svg class="icon-search" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+	        				<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/>
+	        			</svg>
+        			</div>
+        		</div>
+        		
+        		
+        		<div class="header-right">
+        			<img alt="Ảnh bìa sách" src="/img/tony.png" style="height: 240px">
+        			<img alt="Ảnh bìa sách" src="/img/nna.jpg" style="height: 240px">
+        		</div>
+        	</div>
+        	
+	        
+	      
+	        <button style="margin-top: 20px; cursor: pointer;" th:if="${session.role != null && session.role == 'ADMIN'}">
+	            <a style="text-decoration: none; color: black; padding: 4px;" href="/add-book" >Add Book</a>
+	        </button>
+        
+        </div>
+        
+        <div class="t-wrap" style="display: flex; justify-content: center;">
+	        <a th:href="${'/view/' + book.id}" class="t-28-per" th:each="book: ${session.books}">
+	        	<img alt="Ảnh bìa sách" th:src="'/img/' + ${book.image}" style="height: 240px">
+	        	<div th:text="${book.title}"></div>
+	        	<div th:text="${book.author}"></div>
+	        	<br>
+	        	<button class="delete" th:if="${session.user != null && session.role == 'ADMIN'}">Xóa</button>
+	        	<span style="display: none;" th:text="${book.id}"></span>
+	        </a>
+        
+        </div>
+        
+        <script type="text/javascript">
+		$(document).ready(function() {
+			// show box confirm delete book
+			$(".delete").click(function(e) {
+				if (confirm("Bạn có thực sự muốn xóa sách?")) {
+				  	// if agree delete book -> call api delete
+				  	
+				  	// get id
+				  	let id = Number($(e.target).next().text());
+				  	
+				  	$.ajax({
+			            type: "POST",
+			            url: "http://localhost:8080/delete",
+			            // async: false,
+			            data: JSON.stringify(id),
+			            dataType: "json",
+			            contentType: "application/json",
+			            success: function (response) {
+			            	alert("Xóa thành công.");
+			            	window.location.href = 'http://localhost:8080/';
+			            },
+			            error: function(reject) {
+			                alert("Không thành công.");
+			                console.log(reject);
+			            }
+			        });	
+				  	
+				} 
+			});
+				
+		})
+	
+	</script>
+    </body>
+</html>
